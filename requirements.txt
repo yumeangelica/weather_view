@@ -1,0 +1,2 @@
+python-dotenv==1.0.0  # To load environment variables from a .env file
+requests==2.31.0       # For making HTTP requests
