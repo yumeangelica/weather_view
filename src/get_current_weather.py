@@ -1,11 +1,11 @@
 import requests
 from datetime import datetime
-import pytz # For timezone conversion in datetime
+import pytz  # For timezone conversion in datetime
 
 from src.get_uv_index import get_uv_index
 
-def get_weather_with_uv(api_key: str, city: str): # Function to get weather from API
-    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric'
+def get_weather_with_uv(owm_api_key: str, city: str):  # Function to get weather from OpenWeatherMap API
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={owm_api_key}&units=metric'
 
     try:
         response = requests.get(url).json()
@@ -15,13 +15,13 @@ def get_weather_with_uv(api_key: str, city: str): # Function to get weather from
         lon = response['coord']['lon']
 
         # Get the UV index using the latitude and longitude
-        uv_response = get_uv_index(api_key, lat, lon)
+        uv_response = get_uv_index(owm_api_key, lat, lon)
 
-
-        # Change sunrise and sunset time from unix timestamp to datetime
+        # Convert sunrise and sunset time from unix timestamp to datetime
         sunrise_time = datetime.fromtimestamp(response['sys']['sunrise'], pytz.utc)
         sunset_time = datetime.fromtimestamp(response['sys']['sunset'], pytz.utc)
 
+        # Prepare the weather dictionary with relevant data
         weather = {
             'city': response['name'],
             'temperature': response['main']['temp'],
@@ -44,5 +44,6 @@ def get_weather_with_uv(api_key: str, city: str): # Function to get weather from
         }
 
         return weather
-    except:
+    except Exception as e:
+        print(f"Error: {e}")
         return None
