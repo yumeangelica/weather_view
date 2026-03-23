@@ -1,108 +1,104 @@
-# Weather View Application
+# Weather View
 
 ## Overview
 
-This is a Python-based application designed to provide real-time weather information for any specified city. Utilizing the OpenWeatherMap API, it displays current weather details such as temperature, weather conditions, humidity, UV index, and more. Additionally, the application supports a 3-day weather forecast with UV index calculations using the pysolar library for solar position calculations. This user-friendly application can be tailored for various global locations.
+A Python application that fetches real-time weather data and 3-day forecasts for any city using the [OpenWeatherMap API](https://openweathermap.org/api). Includes estimated UV index calculations based on solar position via the pysolar library.
 
 ## Features
 
-- Fetches and displays current weather data including temperature, weather description, humidity, UV index, etc.
-- Provides a 3-day weather forecast with UV index calculations using solar position algorithms.
-- Easy to use with interactive command line interface for city selection.
-- Real-time data retrieval from OpenWeatherMap API.
-- UV index calculation using pysolar library for accurate solar position calculations.
-- Input validation for city names and API key verification.
-- Proper timezone handling for accurate local times.
+- Current weather: temperature, humidity, wind, pressure, sunrise/sunset, cloudiness, rain/snow
+- 3-day forecast in 3-hour intervals with UV index estimation
+- Config-driven settings — API parameters, UV peak value, display formats, and input rules live in a JSON file
+- Shared UV calculator module to avoid code duplication
+- Proper error handling with specific messages for timeouts, connection failures, and unexpected responses
+- Input validation for city names (configurable allowed characters)
+- Timezone-aware timestamps using the city's local time
+
+## Project Structure
+
+\```
+weather_view/
+├── main.py                          # Entry point
+├── requirements.txt
+├── .env                             # API key (not committed)
+├── config/
+│   └── weather_config.json          # API URLs, UV settings, display formats
+└── src/
+    ├── __init__.py
+    ├── main_program.py              # CLI input loop
+    ├── get_current_weather.py       # Current weather fetcher
+    ├── get_weather_forecast.py      # Forecast fetcher
+    ├── uv_calculator.py             # Shared UV index estimation
+    └── config_loader.py             # Config file loader with caching
+\```
 
 ## Prerequisites
 
-- Python 3.8+ (tested with Python 3.12)
-- pip (latest version recommended)
+- Python 3.10+
+- pip
 
 ## Installation
 
-### Python and pip
+1. Clone the repository:
+\```bash
+git clone <repository-url>
+cd weather_view
+\```
 
-Ensure you have the correct versions of Python and pip installed. Download Python [here](https://www.python.org/downloads/) which includes pip.
+2. Create a virtual environment and activate it:
+\```bash
+python3 -m venv venv
+source venv/bin/activate
+\```
 
-To check your Python version:
+3. Install dependencies:
+\```bash
+pip install -r requirements.txt
+\```
 
-```bash
-python3 --version
-```
-
-To check your pip version:
-
-```bash
-pip3 --version
-```
-
-## Setting up the project:
-
-1. Clone the repository.
-2. Navigate to the project's root directory.
-3. Setup your `.env` file in the root directory. Add your OpenWeatherMap API key in this format:
-   ```plaintext
-   OPENWEATHERMAP_API_KEY=your_openweathermap_api_key
-   ```
-
-**Note**: The application will check if your API key is properly set before starting. If the API key is missing or invalid, you'll receive clear instructions on how to fix it.
+4. Create a `.env` file in the project root with your API key:
+\```
+OPENWEATHERMAP_API_KEY=your_api_key_here
+\```
 
 You can get a free API key from [OpenWeatherMap](https://openweathermap.org/api).
 
-## Installing dependencies
+## Configuration
 
-1. Navigate to the project's root directory.
-2. Run the following command to install all required dependencies:
+### API Key (`.env`)
 
-```bash
-pip3 install -r requirements.txt
-```
+The API key is loaded from a `.env` file via python-dotenv. The app validates the key on startup and provides clear instructions if it's missing or empty.
 
-### Dependencies included:
+### App Settings (`config/weather_config.json`)
 
-- `python-dotenv`: For loading environment variables from .env file
-- `requests`: For making HTTP API requests to OpenWeatherMap
-- `pytz`: For timezone handling and local time calculations
-- `pysolar`: For solar position calculations used in UV index computation
-
-## Running the application
-
-1. Navigate to the project's root directory.
-2. Run the following command to execute the application:
-
-```bash
-python3 main.py
-```
+Controls API endpoints, request timeout, units, UV estimation peak value, display formats, and allowed characters in city name input. All settings have sensible defaults built into the code as a fallback.
 
 ## Usage
 
-After starting the application, you will be prompted for the following inputs:
+\```bash
+python3 main.py
+\```
 
-1. **City Name**: Enter the name of the city for which you want to fetch weather data (or type "exit" to quit).
-2. **Data Choice**: Enter `1` to fetch the current weather or `2` for the 3-day forecast.
-3. **Next Step**: After displaying the data, choose whether to:
-   - Enter `1` for a new city
-   - Enter `2` to reuse the same city for different data
-   - Enter `3` to quit the application
+You will be prompted for:
 
-The application includes input validation to ensure city names contain only valid characters and will prompt you to re-enter if invalid input is provided.
+1. **City name** — e.g. `helsinki`, `london`, `new york`. Type `exit` to quit.
+2. **Data type** — `1` for current weather, `2` for 3-day forecast.
+3. **Next action** — `1` for new city, `2` to reuse same city, `3` to quit.
+
+## UV Index Note
+
+The UV index is estimated using solar altitude angle calculations (via pysolar), not from a dedicated UV API. The estimation uses a configurable peak UV value (default: 8.0) scaled by `sin(solar_altitude)`. This is an approximation — actual UV depends on cloud cover, ozone, and surface conditions. The UV index will show 0.0 during nighttime hours.
 
 ## Troubleshooting
 
-### Common Issues:
-
-1. **"API key not found" error**: Make sure your `.env` file is in the project root directory and contains the correct API key format.
-2. **"API error" messages**: Check that your OpenWeatherMap API key is valid and active.
-3. **UV index shows 0**: This is normal during nighttime hours in the selected city.
-4. **City not found**: Try using the full city name or check the spelling.
-
-## Credits
-
-This project was developed by yumeangelica. For more information on how this work can be used, please refer to the LICENSE.txt file.
-
-Copyright © 2024 - present; yumeangelica
+- **"API key not found"** — make sure `.env` exists in the project root with the correct format.
+- **"API error"** — verify your API key is valid and active at openweathermap.org.
+- **"Request timed out"** — the weather service may be temporarily unavailable. The timeout is configurable in `weather_config.json`.
+- **UV index is always 0** — normal during nighttime in the queried city.
+- **City not found** — try the full city name or check spelling.
 
 ## License
 
-This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. For more information, see the LICENSE file in this repository.
+This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+
+Copyright © 2024 – present, [yumeangelica](https://github.com/yumeangelica)
