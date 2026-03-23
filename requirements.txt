@@ -1,4 +1,4 @@
-python-dotenv==1.0.1  # To load environment variables from a .env file
-requests==2.32.3       # For making HTTP requests
-pytz==2024.1 # For working with time zones
-pysolar==0.13
+python-dotenv==1.2.2   # Load API key from .env file
+requests==2.32.5       # HTTP requests (CVE-2024-47081 fix)
+pytz==2026.1.post1     # Timezone handling
+pysolar==0.13          # Solar position for UV index estimation
