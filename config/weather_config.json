@@ -1,0 +1,28 @@
+{
+  "_config_version": "1.0",
+
+  "api": {
+    "base_url": "https://api.openweathermap.org/data/2.5",
+    "current_endpoint": "/weather",
+    "forecast_endpoint": "/forecast",
+    "timeout": 10,
+    "units": "metric",
+    "forecast_count": 24
+  },
+
+  "uv": {
+    "peak_value": 8.0,
+    "_peak_note": "Estimated max UV index used for solar altitude scaling. Adjust for latitude/season if needed."
+  },
+
+  "display": {
+    "datetime_format": "%Y-%m-%d %H:%M:%S %Z",
+    "temperature_unit": "°C",
+    "wind_unit": "m/s"
+  },
+
+  "input": {
+    "allowed_extra_chars": "-'. ",
+    "_note": "Letters (a-z, A-Z, åäöÅÄÖ) are always allowed. These are the additional characters permitted in city names."
+  }
+}
