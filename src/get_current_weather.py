@@ -32,7 +32,15 @@ def get_weather_with_uv(api_key: str, city: str) -> dict | None:
 
     try:
         resp = requests.get(url, params=params, timeout=api['timeout'])
-        data = resp.json()
+        try:
+            data = resp.json()
+        except ValueError as e:
+            print(f"Error: Unexpected response format: invalid JSON ({e})")
+            return None
+
+        if not isinstance(data, dict):
+            print("Error: Unexpected response format: expected a JSON object.")
+            return None
 
         if resp.status_code != 200:
             print(f"API error: {data.get('message', 'Unknown error')}")
@@ -84,6 +92,6 @@ def get_weather_with_uv(api_key: str, city: str) -> dict | None:
     except requests.exceptions.RequestException as e:
         print(f"Error: Network request failed: {e}")
         return None
-    except (KeyError, TypeError) as e:
+    except (KeyError, TypeError, IndexError, AttributeError) as e:
         print(f"Error: Unexpected response format: {e}")
         return None
