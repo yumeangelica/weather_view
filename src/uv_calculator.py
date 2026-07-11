@@ -2,7 +2,6 @@
 
 import math
 from datetime import datetime
-import pytz
 from pysolar.solar import get_altitude
 
 
