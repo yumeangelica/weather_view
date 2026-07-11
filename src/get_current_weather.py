@@ -1,8 +1,7 @@
 """Fetch current weather data from OpenWeatherMap API."""
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import requests
-import pytz
 
 from src.uv_calculator import estimate_uv_index
 from src.config_loader import load_config
@@ -51,10 +50,10 @@ def get_weather_with_uv(api_key: str, city: str) -> dict | None:
 
         # Build local timezone from API offset
         tz_offset = data.get("timezone", 0)
-        local_tz = pytz.FixedOffset(tz_offset // 60)
+        local_tz = timezone(timedelta(seconds=tz_offset))
 
         # Estimate UV index from solar position
-        current_time_utc = datetime.now(tz=pytz.utc)
+        current_time_utc = datetime.now(tz=timezone.utc)
         uv_value = estimate_uv_index(lat, lon, current_time_utc, uv_peak)
 
         # Format sunrise/sunset in local time

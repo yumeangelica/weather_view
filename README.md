@@ -16,7 +16,8 @@ A small Python command-line app for checking current weather and 3-day forecasts
 ```text
 weather_view/
 ├── main.py
-├── requirements.txt
+├── pyproject.toml
+├── uv.lock
 ├── config/
 │   └── weather_config.json
 ├── src/
@@ -35,24 +36,18 @@ weather_view/
 ## Requirements
 
 - Python 3.10+
+- [uv](https://docs.astral.sh/uv/)
 - An OpenWeatherMap API key
 
 ## Setup
 
-1. Create and activate a virtual environment:
+1. Install dependencies:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+uv sync
 ```
 
-2. Install dependencies:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-3. Create a `.env` file in the project root:
+2. Create a `.env` file in the project root:
 
 ```text
 OPENWEATHERMAP_API_KEY=your_api_key_here
@@ -63,7 +58,7 @@ You can create a free API key from [OpenWeatherMap](https://openweathermap.org/a
 ## Usage
 
 ```bash
-python3 main.py
+uv run main.py
 ```
 
 The app will ask for:
@@ -88,13 +83,13 @@ If the config file is missing or invalid, the app falls back to built-in default
 Run the unit tests with:
 
 ```bash
-python -m unittest discover -s tests
+uv run python -m unittest discover -s tests
 ```
 
-You can also run a quick syntax check:
+Lint the code with:
 
 ```bash
-python -m compileall -q main.py src tests
+uv run ruff check .
 ```
 
 ## UV Index Note

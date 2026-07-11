@@ -1,8 +1,7 @@
 """Fetch weather forecast data from OpenWeatherMap API."""
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import requests
-import pytz
 
 from src.uv_calculator import estimate_uv_index
 from src.config_loader import load_config
@@ -54,7 +53,7 @@ def get_forecast(api_key: str, city: str) -> list[dict] | None:
         coord = data["city"]["coord"]
         lat, lon = coord["lat"], coord["lon"]
         tz_offset = data["city"].get("timezone", 0)
-        local_tz = pytz.FixedOffset(tz_offset // 60)
+        local_tz = timezone(timedelta(seconds=tz_offset))
         dt_format = display['datetime_format']
 
         forecasts = []
@@ -62,7 +61,7 @@ def get_forecast(api_key: str, city: str) -> list[dict] | None:
             ts = item["dt"]
 
             # Calculate UV from solar position at forecast time
-            dt_utc = datetime.fromtimestamp(ts, tz=pytz.utc)
+            dt_utc = datetime.fromtimestamp(ts, tz=timezone.utc)
             uv_val = estimate_uv_index(lat, lon, dt_utc, uv_peak)
 
             # Convert to local timezone for display

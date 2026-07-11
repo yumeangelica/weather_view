@@ -1,0 +1,22 @@
+[project]
+name = "weather-view"
+version = "1.0.0"
+description = "Command-line app for current weather and 3-day forecasts via the OpenWeatherMap API, with UV index estimation from solar altitude"
+readme = "README.md"
+authors = [{ name = "yumeangelica" }]
+license = { file = "LICENSE.txt" }
+requires-python = ">=3.10"
+dependencies = [
+    "pysolar>=0.13",
+    "python-dotenv>=1.2.2",
+    "requests>=2.34.2",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
